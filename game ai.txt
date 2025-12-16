@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لعبة سيارة</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+      text-align: center;
+      color: white;
+      font-family: Arial;
+    }
+    canvas {
+      background: #555;
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🚗 لعبة سباق</h2>
+<p>النقاط: <span id="score">0</span></p>
+
+<canvas id="game" width="400" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const scoreText = document.getElementById("score");
+
+let score = 0;
+
+// السيارة
+const car = {
+  x: 175,
+  y: 500,
+  width: 50,
+  height: 80,
+  speed: 7
+};
+
+// عائق
+let obstacle = {
+  x: Math.random() * 350,
+  y: -100,
+  width: 50,
+  height: 80,
+  speed: 5
+};
+
+let keys = {};
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function drawCar() {
+  ctx.fillStyle = "red";
+  ctx.fillRect(car.x, car.y, car.width, car.height);
+}
+
+function drawObstacle() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+}
+
+function update() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (keys["ArrowLeft"] && car.x > 0) car.x -= car.speed;
+  if (keys["ArrowRight"] && car.x < 350) car.x += car.speed;
+
+  obstacle.y += obstacle.speed;
+
+  if (obstacle.y > canvas.height) {
+    obstacle.y = -100;
+    obstacle.x = Math.random() * 350;
+    score++;
+    scoreText.textContent = score;
+  }
+
+  // تصادم
+  if (
+    car.x < obstacle.x + obstacle.width &&
+    car.x + car.width > obstacle.x &&
+    car.y < obstacle.y + obstacle.height &&
+    car.y + car.height > obstacle.y
+  ) {
+    alert("💥 انتهت اللعبة! نقاطك: " + score);
+    location.reload();
+  }
+
+  drawCar();
+  drawObstacle();
+  requestAnimationFrame(update);
+}
+
+update();
+</script>
+
+</body>
+</html>
